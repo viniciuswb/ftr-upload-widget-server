@@ -55,7 +55,7 @@ jobs:
           tags: |
             ${{ steps.ecr-login.outputs.registry }}/${{ vars.AWS_ECR_REPOSITORY }}:scan
           cache-from: type=gha
-          cache-to: type=gha;mode=max
+          cache-to: type=gha,mode=max
 
       - name: Run Trivy scanner
         uses: aquasecurity/trivy-action@0.30.0
