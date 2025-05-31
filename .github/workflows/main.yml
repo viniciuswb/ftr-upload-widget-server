@@ -30,13 +30,20 @@ jobs:
           SHA=$(echo $GITHUB_SHA | head -c7)
           echo "sha=$SHA" >> $GITHUB_OUTPUT
 
-      - name: Build and push image to AWS ECR
-        env:
-          AWS_ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          AWS_ECR_REPOSITORY: ${{ vars.AWS_ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ steps.generate_tag.outputs.sha }}
-        run: |
-          docker build -t $AWS_ECR_REGISTRY/$AWS_ECR_REPOSITORY:$IMAGE_TAG . 
-          docker push $AWS_ECR_REGISTRY/$AWS_ECR_REPOSITORY:$IMAGE_TAG
+      - name: build and push to ECR
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.ecr-login.outputs.registry }}/${{ vars.AWS_ECR_REPOSITORY }}:${{ steps.generate_tag.outputs.sha }}          
+
+      # - name: Build and push image to AWS ECR
+      #   env:
+      #     AWS_ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+      #     AWS_ECR_REPOSITORY: ${{ vars.AWS_ECR_REPOSITORY }}
+      #     IMAGE_TAG: ${{ steps.generate_tag.outputs.sha }}
+      #   run: |
+      #     docker build -t $AWS_ECR_REGISTRY/$AWS_ECR_REPOSITORY:$IMAGE_TAG . 
+      #     docker push $AWS_ECR_REGISTRY/$AWS_ECR_REPOSITORY:$IMAGE_TAG
         
 
